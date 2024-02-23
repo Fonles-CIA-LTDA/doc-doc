@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "especialidades_escalas",
+  "info": {
+    "singularName": "especialidades-escala",
+    "pluralName": "especialidades-escalas",
+    "displayName": "Especialidades_Escalas"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titulo": {
+      "type": "string"
+    },
+    "escalas": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::escala.escala",
+      "mappedBy": "especialidades_escala"
+    }
+  }
+}

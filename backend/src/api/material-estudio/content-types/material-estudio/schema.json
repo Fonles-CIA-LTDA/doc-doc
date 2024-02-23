@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "material_estudios",
+  "info": {
+    "singularName": "material-estudio",
+    "pluralName": "material-estudios",
+    "displayName": "Material_Estudio",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Imagen": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "Link": {
+      "type": "text"
+    },
+    "Titulo": {
+      "type": "string"
+    }
+  }
+}

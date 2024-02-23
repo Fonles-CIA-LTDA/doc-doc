@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "preguntas_visuals",
+  "info": {
+    "singularName": "preguntas-visual",
+    "pluralName": "preguntas-visuals",
+    "displayName": "Preguntas_Visual"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "sub_espe_visual": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::sub-espe-visual.sub-espe-visual",
+      "inversedBy": "preguntas_visuals"
+    },
+    "Feedback": {
+      "type": "text"
+    },
+    "Contenido": {
+      "type": "text"
+    },
+    "Imagen": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    },
+    "Respuestas": {
+      "type": "text"
+    },
+    "Respuesta_Correcta": {
+      "type": "integer"
+    },
+    "flash_card": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::flash-card.flash-card",
+      "inversedBy": "preguntas_visuals"
+    }
+  }
+}

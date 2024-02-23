@@ -1,7 +1,11 @@
+import 'package:app/controllers/register.controllers.dart';
 import 'package:app/ui/helpers/colors.dart';
+import 'package:app/ui/widgets/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/get_core.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -13,6 +17,12 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   bool obscure = true;
   bool university = false;
+  TextEditingController _name = TextEditingController();
+  TextEditingController _email = TextEditingController();
+  TextEditingController _password = TextEditingController();
+  TextEditingController _state = TextEditingController();
+  TextEditingController _university = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,10 +67,10 @@ class _RegisterPageState extends State<RegisterPage> {
               SizedBox(
                 height: 20,
               ),
-              _textField(context, "Nombre", false, "name"),
-              _textField(context, "Correo", false, "email"),
-              _textField(context, "Contraseña", obscure, "password"),
-              _textField(context, "Estado", false, "estado"),
+              _textField(context, "Nombre", false, "name", _name),
+              _textField(context, "Correo", false, "email", _email),
+              _textField(context, "Contraseña", obscure, "password", _password),
+              _textField(context, "Estado (Opcional)", false, "estado", _state),
               CheckboxListTile(
                 value: university,
                 onChanged: (value) {
@@ -75,37 +85,56 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               !university
                   ? SizedBox()
-                  : _textField(context, "Universidad", false, "name"),
+                  : _textField(
+                      context, "Universidad", false, "name", _university),
               SizedBox(
                 height: 25,
               ),
-              Container(
-                width: double.infinity,
-                height: 59,
-                decoration: ShapeDecoration(
-                  color: Color(0xFF2A303C),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+              GestureDetector(
+                onTap: () async {
+                  getLoadingModal(context);
+                  //ACTION
+                  List response = await RegisterControllers()
+                      .register(_name, _email, _password, _state, _university);
+                  Navigator.pop(context);
+
+                  if (response[0]) {
+                    Get.offAllNamed("/home");
+                  } else {
+                    QuickAlert.show(
+                        context: context,
+                        type: QuickAlertType.error,
+                        text: response[1]);
+                  }
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 59,
+                  decoration: ShapeDecoration(
+                    color: Color(0xFF2A303C),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    shadows: [
+                      BoxShadow(
+                        color: Color(0x1E000000),
+                        blurRadius: 1,
+                        offset: Offset(0, 2),
+                        spreadRadius: 0,
+                      )
+                    ],
                   ),
-                  shadows: [
-                    BoxShadow(
-                      color: Color(0x1E000000),
-                      blurRadius: 1,
-                      offset: Offset(0, 2),
-                      spreadRadius: 0,
-                    )
-                  ],
-                ),
-                child: Center(
-                  child: Text(
-                    'Registrarse',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontFamily: 'Outfit',
-                      fontWeight: FontWeight.w700,
-                      height: 0,
+                  child: Center(
+                    child: Text(
+                      'Registrarse',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontFamily: 'Outfit',
+                        fontWeight: FontWeight.w700,
+                        height: 0,
+                      ),
                     ),
                   ),
                 ),
@@ -117,7 +146,8 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Padding _textField(BuildContext context, hintText, obscureParam, type) {
+  Padding _textField(
+      BuildContext context, hintText, obscureParam, type, controllerParam) {
     return Padding(
       padding: const EdgeInsets.only(top: 8, bottom: 8),
       child: Material(
@@ -136,6 +166,7 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             child: Center(
               child: TextField(
+                controller: controllerParam,
                 keyboardType: type == "email"
                     ? TextInputType.emailAddress
                     : TextInputType.text,

@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sub_especialidades",
+  "info": {
+    "singularName": "sub-especialidad",
+    "pluralName": "sub-especialidades",
+    "displayName": "Sub_Especialidades"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titulo": {
+      "type": "string"
+    },
+    "especialidade": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::especialidad.especialidad",
+      "inversedBy": "sub_especialidades"
+    },
+    "preguntas_especialidads": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::pregunta.pregunta",
+      "mappedBy": "sub_especialidade"
+    }
+  }
+}

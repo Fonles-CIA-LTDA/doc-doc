@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "especialidades_visuales",
+  "info": {
+    "singularName": "especialidades-visual",
+    "pluralName": "especialidades-visuales",
+    "displayName": "Especialidades_Visuales",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titulo": {
+      "type": "string"
+    },
+    "sub_espe_visuals": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::sub-espe-visual.sub-espe-visual",
+      "mappedBy": "especialidades_visuale"
+    }
+  }
+}

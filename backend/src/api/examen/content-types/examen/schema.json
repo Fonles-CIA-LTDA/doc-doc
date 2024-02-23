@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "examenes",
+  "info": {
+    "singularName": "examen",
+    "pluralName": "examenes",
+    "displayName": "Examenes",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Fecha": {
+      "type": "string"
+    },
+    "preguntas_examen": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::pregunta-examen.pregunta-examen",
+      "mappedBy": "examene"
+    },
+    "users_permissions_user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "examenes"
+    },
+    "Titulo": {
+      "type": "string"
+    },
+    "Nota": {
+      "type": "decimal",
+      "default": 0
+    }
+  }
+}

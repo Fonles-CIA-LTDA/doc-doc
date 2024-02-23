@@ -1,0 +1,48 @@
+{
+  "kind": "collectionType",
+  "collectionName": "flash_cards",
+  "info": {
+    "singularName": "flash-card",
+    "pluralName": "flash-cards",
+    "displayName": "FlashCards",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titulo": {
+      "type": "string"
+    },
+    "Imagen": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "preguntas": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::pregunta.pregunta",
+      "mappedBy": "flash_card"
+    },
+    "especialidades_flash_card": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::especialidades-flash-card.especialidades-flash-card",
+      "inversedBy": "flash_cards"
+    },
+    "preguntas_visuals": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::preguntas-visual.preguntas-visual",
+      "mappedBy": "flash_card"
+    }
+  }
+}

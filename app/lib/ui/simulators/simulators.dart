@@ -1,7 +1,16 @@
+import 'dart:math';
+
+import 'package:app/connections/areas.dart';
+import 'package:app/connections/exam.dart';
+import 'package:app/main.dart';
 import 'package:app/ui/helpers/colors.dart';
+import 'package:app/ui/helpers/navigate.dart';
+import 'package:app/ui/simulators/select_areas_modal.dart';
+import 'package:app/ui/widgets/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:quickalert/quickalert.dart';
 
 class SimulatorsPage extends StatefulWidget {
@@ -13,162 +22,145 @@ class SimulatorsPage extends StatefulWidget {
 }
 
 class _SimulatorsPageState extends State<SimulatorsPage> {
+  static const _pageSize = 25;
+
+  final PagingController _pagingController = PagingController(firstPageKey: 1);
   int area = 0;
-  List optionsSpecialized = [
-    {"name": "Examen de Cirugía", "prefix": "C", "id": 0},
-    {"name": "Examen de Urgencias", "prefix": "U", "id": 0},
-    {"name": "Examen de Medicina Interna", "prefix": "I", "id": 0},
-    {"name": "Examen de Ginecología y Obstetricia", "prefix": "G", "id": 0},
-    {"name": "Examen de Medicina Familiar", "prefix": "F", "id": 0}
-  ];
-  List optionsVisual = [
-    {"name": "Examen de Radiografías", "prefix": "R", "id": 0},
-    {"name": "Examen de USG", "prefix": "U", "id": 0},
-    {"name": "Examen de TAC", "prefix": "T", "id": 0},
-    {"name": "Examen de RM", "prefix": "T", "id": 0},
-  ];
+  bool loading = true;
+
+  loadData(pageKey) async {
+    if (area == 0) {
+      var response = await AreasConnections().getAreaEspecialidad(pageKey);
+      final isLastPage = response['data'].length < _pageSize;
+      if (isLastPage) {
+        _pagingController.appendLastPage(response['data']);
+      } else {
+        final nextPageKey = pageKey + 1;
+        _pagingController.appendPage(response['data'], nextPageKey);
+      }
+    } else {
+      var response =
+          await AreasConnections().getAreaEspecialidadVisual(pageKey);
+      final isLastPage = response['data'].length < _pageSize;
+      if (isLastPage) {
+        _pagingController.appendLastPage(response['data']);
+      } else {
+        final nextPageKey = pageKey + 1;
+        _pagingController.appendPage(response['data'], nextPageKey);
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    _pagingController.addPageRequestListener((pageKey) {
+      loadData(pageKey);
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(10.0),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                IconButton(
-                    padding: EdgeInsets.all(0.0),
-                    onPressed: () {
-                      widget.keyS.currentState!.openDrawer();
-                    },
-                    icon: Icon(Icons.menu)),
-                IconButton(
-                    padding: EdgeInsets.all(0.0),
-                    onPressed: () {},
-                    icon: Icon(Icons.notifications))
-              ],
+        padding: EdgeInsets.all(10.0),
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          IconButton(
+                              padding: EdgeInsets.all(0.0),
+                              onPressed: () {
+                                widget.keyS.currentState!.openDrawer();
+                              },
+                              icon: Icon(Icons.menu)),
+                          IconButton(
+                              padding: EdgeInsets.all(0.0),
+                              onPressed: () {
+                                Get.toNamed("/notifications");
+                              },
+                              icon: Icon(Icons.notifications))
+                        ],
+                      ),
+                      _header(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      _completeExamen(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      _area(),
+                      SizedBox(
+                        height: 10,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            _header(),
-            SizedBox(
-              height: 20,
+            PagedSliverList(
+              pagingController: _pagingController,
+              builderDelegate: PagedChildBuilderDelegate(
+                  itemBuilder: (context, item, index) => _modelCard(item)),
             ),
-            _completeExamen(),
-            SizedBox(
-              height: 20,
-            ),
-            _area(),
-            SizedBox(
-              height: 10,
-            ),
-            _generateList()
           ],
+        ));
+  }
+
+  Column _modelCard(item) {
+    return Column(
+      children: [
+        Material(
+          elevation: 2,
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+          child: ListTile(
+            leading: CircleAvatar(
+              child: Center(
+                child: Text(
+                    "${item['attributes']['Titulo'].toString().split(" ")[2][0]}"),
+              ),
+              backgroundColor: generarColorPastel(),
+            ),
+            onTap: () {
+              navigateMembership(context, () {
+                return showDialog(
+                    context: context,
+                    builder: (context) {
+                      return SelectAreasModal(
+                          idSelect: item['id'].toString(),
+                          titleSelect: item['attributes']['Titulo'].toString(),
+                          area: area);
+                    });
+              });
+            },
+            title: Text(
+              "${item['attributes']['Titulo']}",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
         ),
-      ),
+        Divider()
+      ],
     );
   }
 
-  _generateList() {
-    if (area == 0) {
-      return Column(
-        children: List.generate(
-            optionsSpecialized.length,
-            (index) => Column(
-                  children: [
-                    ListTile(
-                      leading: CircleAvatar(
-                        child: Center(
-                          child: Text(optionsSpecialized[index]['prefix']),
-                        ),
-                      ),
-                      onTap: () {
-                        navigate();
-                      },
-                      title: Text(
-                        optionsSpecialized[index]['name'],
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Divider()
-                  ],
-                )),
-      );
-    } else {
-      return Column(
-        children: List.generate(
-            optionsVisual.length,
-            (index) => Column(
-                  children: [
-                    ListTile(
-                      leading: CircleAvatar(
-                        child: Center(
-                          child: Text(optionsVisual[index]['prefix']),
-                        ),
-                      ),
-                      onTap: () {
-                        navigate();
-                      },
-                      title: Text(
-                        optionsVisual[index]['name'],
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Divider()
-                  ],
-                )),
-      );
-    }
-  }
+  Color generarColorPastel() {
+    Random random = Random();
 
-  navigate() {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                  SizedBox(
-                  height: 10,
-                ),
-                Center(child: Icon(Icons.info, color: Colors.blue,size: 30,)),
-                  SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "Disponible sólo para suscriptores",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                
-                Text(
-                  "¿Deseas suscribirte ahora?",
-                  style: TextStyle(fontSize: 13),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    OutlinedButton(onPressed: () {
-                      Get.back();
-                    }, child: Text("No")),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    ElevatedButton(onPressed: () {}, child: Text("Si")),
-                  ],
-                )
-              ],
-            ),
-          );
-        });
+    // Generar componentes de color
+    int red = 200 + random.nextInt(56); // Rango: 200-255
+    int green = 200 + random.nextInt(50); // Rango: 200-255
+    int blue = 200 + random.nextInt(50); // Rango: 200-255
+
+    // Crear y devolver el color pastel
+    return Color.fromARGB(255, red, green, blue);
   }
 
   Row _area() {
@@ -177,10 +169,14 @@ class _SimulatorsPageState extends State<SimulatorsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          onTap: () {
+          onTap: () async {
             setState(() {
               area = 0;
+
+              _pagingController.refresh();
             });
+
+            // loadData(0);
           },
           child: Container(
             color: Colors.transparent,
@@ -196,14 +192,20 @@ class _SimulatorsPageState extends State<SimulatorsPage> {
                 ),
                 area != 0
                     ? SizedBox()
-                    : Container(
-                        width: double.infinity,
-                        height: 5,
-                        decoration: BoxDecoration(
-                            color: Color.fromRGBO(244, 207, 127, 1.0),
-                            borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(20.0),
-                                topLeft: Radius.circular(20.0))),
+                    : Material(
+                        elevation: 2,
+                        borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(20.0),
+                            topLeft: Radius.circular(20.0)),
+                        child: Container(
+                          width: double.infinity,
+                          height: 5,
+                          decoration: BoxDecoration(
+                              color: Color.fromRGBO(89, 237, 178, 1),
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(20.0),
+                                  topLeft: Radius.circular(20.0))),
+                        ),
                       )
               ],
             ),
@@ -216,6 +218,7 @@ class _SimulatorsPageState extends State<SimulatorsPage> {
           onTap: () {
             setState(() {
               area = 1;
+              _pagingController.refresh();
             });
           },
           child: Container(
@@ -234,14 +237,20 @@ class _SimulatorsPageState extends State<SimulatorsPage> {
                 ),
                 area != 1
                     ? SizedBox()
-                    : Container(
-                        width: double.infinity,
-                        height: 5,
-                        decoration: BoxDecoration(
-                            color: Color.fromRGBO(244, 207, 127, 1.0),
-                            borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(20.0),
-                                topLeft: Radius.circular(20.0))),
+                    : Material(
+                        elevation: 2,
+                        borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(20.0),
+                            topLeft: Radius.circular(20.0)),
+                        child: Container(
+                          width: double.infinity,
+                          height: 5,
+                          decoration: BoxDecoration(
+                              color: Color.fromRGBO(89, 237, 178, 1),
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(20.0),
+                                  topLeft: Radius.circular(20.0))),
+                        ),
                       )
               ],
             ),
@@ -308,7 +317,15 @@ class _SimulatorsPageState extends State<SimulatorsPage> {
                 child: ElevatedButton(
                     style:
                         ElevatedButton.styleFrom(backgroundColor: Colors.white),
-                    onPressed: () {},
+                    onPressed: () async {
+                      navigateMembership(context, () async {
+                        getLoadingModal(context);
+                        var idExam = await ExamConnections()
+                            .generateTotalExam("Completo");
+                        Get.back();
+                        Get.toNamed("/exam?id=${idExam['data']}");
+                      });
+                    },
                     child: Text(
                       "Haz el examen",
                       style: TextStyle(fontSize: 13),
@@ -323,7 +340,7 @@ class _SimulatorsPageState extends State<SimulatorsPage> {
     return Container(
       width: double.infinity,
       child: Text(
-        "Hola, Barzilai",
+        "Hola, ${localStorage!.getString("name").toString().split(" ")[0]}",
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
     );

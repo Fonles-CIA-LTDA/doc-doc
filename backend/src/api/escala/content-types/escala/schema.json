@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "escalas",
+  "info": {
+    "singularName": "escala",
+    "pluralName": "escalas",
+    "displayName": "Escalas"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titulo": {
+      "type": "string"
+    },
+    "Descripcion": {
+      "type": "text"
+    },
+    "Imagen": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    },
+    "especialidades_escala": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::especialidades-escala.especialidades-escala",
+      "inversedBy": "escalas"
+    }
+  }
+}

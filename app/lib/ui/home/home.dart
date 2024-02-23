@@ -1,6 +1,9 @@
+import 'package:app/ui/config/config.dart';
 import 'package:app/ui/simulators/simulators.dart';
+import 'package:app/ui/statistics/statistics.dart';
 import 'package:app/ui/widgets/drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -25,7 +28,17 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     setState(() {
-      pages = [SimulatorsPage(keyS: _scaffoldKeyHome,), Container(), Container()];
+      pages = [
+        SimulatorsPage(
+          keyS: _scaffoldKeyHome,
+        ),
+        StatisticsPage(
+          keyS: _scaffoldKeyHome,
+        ),
+        ConfigPage(
+          keyS: _scaffoldKeyHome,
+        )
+      ];
       _doc1 = Image.asset("./assets/icons/doc1.png");
       _doc1Select = Image.asset("./assets/icons/doc1_select.png");
       _doc2 = Image.asset("./assets/icons/doc2.png");
@@ -47,17 +60,28 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: getDrawer(),
-      key: _scaffoldKeyHome,
-      backgroundColor: Colors.white,
-      body: SafeArea(
-          child: Column(
-        children: [Expanded(child: pages[indexPage]), _doc()],
-      )),
-    );
+        drawer: getDrawer(context),
+        resizeToAvoidBottomInset: true,
+        key: _scaffoldKeyHome,
+        body: KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
+          return SafeArea(
+            child: Stack(
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: indexPage!=2? Image.asset("./assets/logos/DOCD MA2.png"):SizedBox(),
+                ),
+                Column(
+                  children: [Expanded(child: pages[indexPage]),isKeyboardVisible?Container(): _doc()],
+                ),
+              ],
+            ),
+          );
+        }));
   }
 
-  Container _doc() {
+  _doc() {
     return Container(
         width: double.infinity,
         height: 70,

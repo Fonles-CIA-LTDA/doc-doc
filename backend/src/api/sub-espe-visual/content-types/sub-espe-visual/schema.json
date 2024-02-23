@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sub_espe_visuals",
+  "info": {
+    "singularName": "sub-espe-visual",
+    "pluralName": "sub-espe-visuals",
+    "displayName": "Sub_Espe_Visual"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titulo": {
+      "type": "string"
+    },
+    "especialidades_visuale": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::especialidades-visual.especialidades-visual",
+      "inversedBy": "sub_espe_visuals"
+    },
+    "preguntas_visuals": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::preguntas-visual.preguntas-visual",
+      "mappedBy": "sub_espe_visual"
+    }
+  }
+}

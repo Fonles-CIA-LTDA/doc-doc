@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "especialidades_flash_cards",
+  "info": {
+    "singularName": "especialidades-flash-card",
+    "pluralName": "especialidades-flash-cards",
+    "displayName": "Especialidades_FlashCards"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titulo": {
+      "type": "string"
+    },
+    "flash_cards": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::flash-card.flash-card",
+      "mappedBy": "especialidades_flash_card"
+    }
+  }
+}

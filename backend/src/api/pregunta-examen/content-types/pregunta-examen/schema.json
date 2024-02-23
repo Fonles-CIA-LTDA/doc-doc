@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "preguntas_examen",
+  "info": {
+    "singularName": "pregunta-examen",
+    "pluralName": "preguntas-examen",
+    "displayName": "Preguntas_Examen",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Respuesta": {
+      "type": "text"
+    },
+    "correcto": {
+      "type": "boolean",
+      "default": false
+    },
+    "examene": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::examen.examen",
+      "inversedBy": "preguntas_examen"
+    },
+    "pregunta": {
+      "type": "json"
+    },
+    "completado": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

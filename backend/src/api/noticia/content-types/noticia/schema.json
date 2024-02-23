@@ -1,0 +1,22 @@
+{
+  "kind": "collectionType",
+  "collectionName": "noticias",
+  "info": {
+    "singularName": "noticia",
+    "pluralName": "noticias",
+    "displayName": "Noticias",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Noticia": {
+      "type": "richtext"
+    },
+    "Fecha": {
+      "type": "date"
+    }
+  }
+}

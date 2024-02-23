@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "especialidades",
+  "info": {
+    "singularName": "especialidad",
+    "pluralName": "especialidades",
+    "displayName": "Especialidades",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titulo": {
+      "type": "string"
+    },
+    "sub_especialidades": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::sub-especialidad.sub-especialidad",
+      "mappedBy": "especialidade"
+    }
+  }
+}

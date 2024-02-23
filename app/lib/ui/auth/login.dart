@@ -1,7 +1,13 @@
+import 'package:app/connections/auth.dart';
+import 'package:app/controllers/login.controller.dart';
+import 'package:app/main.dart';
+import 'package:app/ui/auth/restore_password.dart';
 import 'package:app/ui/helpers/colors.dart';
+import 'package:app/ui/widgets/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/get_core.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:quickalert/quickalert.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,6 +17,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  TextEditingController _controllerEmail = TextEditingController();
+  TextEditingController _controllerPassword = TextEditingController();
   bool obscure = true;
   @override
   Widget build(BuildContext context) {
@@ -57,25 +65,54 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(
                   height: 20,
                 ),
-                _textField(context, "Correo", false, "email"),
-                _textField(context, "Contraseña", obscure, "password"),
+                _textField(context, "Correo", false, "email", _controllerEmail),
+                _textField(context, "Contraseña", obscure, "password",
+                    _controllerPassword),
                 SizedBox(
                   height: 10,
                 ),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: Text("¿Has olvidado tu contraseña?",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      )),
+                  child: GestureDetector(
+                    onTap: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return RestorePasswordMenu();
+                          });
+                    },
+                    child: Text("¿Has olvidado tu contraseña?",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        )),
+                  ),
                 ),
                 SizedBox(
                   height: 25,
                 ),
                 GestureDetector(
-                  onTap: () {
-                    Get.offAllNamed("/home");
+                  onTap: () async {
+                    getLoadingModal(context);
+                    //ACTION
+                    var response = await LoginControllers()
+                        .login(_controllerEmail, _controllerPassword);
+                    Navigator.pop(context);
+
+                    if (response[0]) {
+                      getLoadingModal(context);
+
+                      await AuthConnections()
+                          .getMembership(localStorage!.getInt("id"));
+                      Navigator.pop(context);
+
+                      Get.offAllNamed("/home");
+                    } else {
+                      QuickAlert.show(
+                          context: context,
+                          type: QuickAlertType.error,
+                          text: response[1]);
+                    }
                   },
                   child: Container(
                     width: double.infinity,
@@ -117,7 +154,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Padding _textField(BuildContext context, hintText, obscureParam, type) {
+  Padding _textField(
+      BuildContext context, hintText, obscureParam, type, controllerParam) {
     return Padding(
       padding: const EdgeInsets.only(top: 8, bottom: 8),
       child: Material(
@@ -136,6 +174,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             child: Center(
               child: TextField(
+                controller: controllerParam,
                 keyboardType: type == "email"
                     ? TextInputType.emailAddress
                     : TextInputType.text,

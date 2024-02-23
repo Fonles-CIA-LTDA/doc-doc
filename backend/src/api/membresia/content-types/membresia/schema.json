@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "membresias",
+  "info": {
+    "singularName": "membresia",
+    "pluralName": "membresias",
+    "displayName": "Membresias",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Id_Membresia": {
+      "type": "text"
+    },
+    "Status": {
+      "type": "text"
+    },
+    "Start_Date": {
+      "type": "string"
+    },
+    "Id_Customer": {
+      "type": "text"
+    },
+    "End_Date": {
+      "type": "text"
+    },
+    "users_permissions_user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "membresia"
+    },
+    "type": {
+      "type": "string"
+    }
+  }
+}

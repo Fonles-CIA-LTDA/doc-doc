@@ -1,8 +1,10 @@
+import 'package:app/main.dart';
+import 'package:app/ui/helpers/navigate.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 
-getDrawer() {
+getDrawer(context) {
   return Drawer(
     backgroundColor: Colors.white,
     child: SafeArea(
@@ -28,7 +30,55 @@ getDrawer() {
                 height: 20,
               ),
               ListTile(
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed("/home");
+                },
+                title: Text(
+                  "Simuladores",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  "POWERED BY DOC DOC",
+                  style: TextStyle(fontSize: 10),
+                ),
+              ),
+              Divider(),
+              ListTile(
+                onTap: () {
+                  navigateMembership(context, () {
+                    Get.toNamed("/flash-cards/menu");
+                  });
+                },
+                title: Text(
+                  "Flash Cards",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  "POWERED BY DOC DOC",
+                  style: TextStyle(fontSize: 10),
+                ),
+              ),
+              Divider(),
+              ListTile(
+                onTap: () {
+                  navigateMembership(context, () {
+                    Get.toNamed("/escalas/menu");
+                  });
+                },
+                title: Text(
+                  "Escalas",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  "POWERED BY DOC DOC",
+                  style: TextStyle(fontSize: 10),
+                ),
+              ),
+              Divider(),
+              ListTile(
+                onTap: () {
+                  Get.toNamed("/top-users");
+                },
                 title: Text(
                   "Top Usuarios",
                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -40,7 +90,11 @@ getDrawer() {
               ),
               Divider(),
               ListTile(
-                onTap: () {},
+                onTap: () {
+                  navigateMembership(context, () {
+                    Get.toNamed("/study-material");
+                  });
+                },
                 title: Text(
                   "Material de estudio",
                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -56,13 +110,18 @@ getDrawer() {
         ),
         Divider(),
         ListTile(
-          leading: Icon(Icons.logout, color: Colors.redAccent,),
+          leading: Icon(
+            Icons.logout,
+            color: Colors.redAccent,
+          ),
           onTap: () {
+            localStorage!.clear();
             Get.offAllNamed("/welcome");
           },
           title: Text(
             "Cerrar Sesión",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent),
+            style:
+                TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent),
           ),
         ),
       ],
