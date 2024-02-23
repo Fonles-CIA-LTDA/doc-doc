@@ -124,7 +124,7 @@ class _SimulatorsPageState extends State<SimulatorsPage> {
             leading: CircleAvatar(
               child: Center(
                 child: Text(
-                    "${item['attributes']['Titulo'].toString().split(" ")[2][0]}"),
+                    "${item['attributes']['Titulo'].toString().split(" ")[0][0]}"),
               ),
               backgroundColor: generarColorPastel(),
             ),

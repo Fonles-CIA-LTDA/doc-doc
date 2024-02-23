@@ -37,9 +37,12 @@ class _ConfigPageState extends State<ConfigPage> {
     var response = await ConfigConnections().getProfileInfo();
     var membership = await AuthConnections().getMembership(response['id']);
     setState(() {
-      idMem = membership['data'][0]['attributes']['Id_Membresia'].toString();
+      if (membership['data'].length>0) {
+           idMem = membership['data'][0]['attributes']['Id_Membresia'].toString();
       status = membership['data'][0]['attributes']['Status'].toString();
 
+      }
+   
       _name.text = response['name'];
       _state.text = response['state'];
       _university.text = response['university'];
